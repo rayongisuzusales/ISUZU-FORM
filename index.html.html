@@ -1,0 +1,680 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ใบส่งแต่งรถ - ระยองอีซูซุเซลส์</title>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Sarabun:wght@300;400;500;600;700&display=swap');
+
+:root {
+  --blue: #003087;
+  --blue2: #0050c8;
+  --red: #c00;
+  --gray: #444;
+  --border: #aab;
+  --bg: #f0f4fa;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+
+/* ===== SCREEN UI BAR ===== */
+body {
+  font-family: 'Sarabun', sans-serif;
+  font-size: 11px;
+  background: var(--bg);
+  color: #111;
+}
+
+.topbar {
+  background: linear-gradient(90deg, #003087 0%, #0055cc 100%);
+  color: #fff;
+  padding: 8px 16px;
+  display: flex; align-items: center; justify-content: space-between;
+  position: sticky; top: 0; z-index: 999;
+  box-shadow: 0 2px 8px rgba(0,0,80,.25);
+}
+.topbar h1 { font-size: 14px; font-weight: 700; }
+.topbar small { font-size: 10px; opacity: .75; }
+.btn-row { display: flex; gap: 8px; }
+.btn {
+  padding: 6px 14px; border: none; border-radius: 4px; cursor: pointer;
+  font-family: 'Sarabun', sans-serif; font-size: 12px; font-weight: 700;
+  transition: .15s;
+}
+.btn-p { background: #fff; color: #003087; }
+.btn-p:hover { background: #dce8ff; }
+.btn-r { background: rgba(255,255,255,.18); color: #fff; border: 1px solid rgba(255,255,255,.4); }
+.btn-r:hover { background: rgba(255,255,255,.3); }
+
+.wrap { max-width: 860px; margin: 14px auto 40px; padding: 0 10px; }
+
+/* ===== FORM inputs on screen ===== */
+input, select, textarea {
+  font-family: 'Sarabun', sans-serif; font-size: 11px;
+  border: 1px solid #bbc; border-radius: 3px; padding: 3px 5px;
+  background: #fafbff; color: #111; width: 100%;
+  transition: border .15s, box-shadow .15s;
+}
+input:focus, select:focus { outline: none; border-color: #003087; box-shadow: 0 0 0 2px rgba(0,48,135,.1); }
+input[readonly] { background: #e8f0fe; color: #003087; font-weight: 700; border-color: #9ab; }
+
+/* ===== PRINT DOCUMENT ===== */
+.doc {
+  background: white;
+  width: 100%;
+  padding: 10px 12px;
+  border-radius: 8px;
+  box-shadow: 0 4px 20px rgba(0,0,60,.12);
+}
+
+/* --- Header --- */
+.doc-header {
+  display: flex; align-items: stretch;
+  border: 2px solid #003087;
+  margin-bottom: 4px;
+}
+.doc-logo {
+  background: #003087;
+  color: white;
+  padding: 6px 12px;
+  display: flex; flex-direction: column; align-items: center; justify-content: center;
+  min-width: 130px;
+}
+.doc-logo .co { font-size: 8px; font-weight: 600; letter-spacing: .5px; opacity: .85; }
+.doc-logo .brand { font-size: 18px; font-weight: 900; letter-spacing: 1px; color: #ffcc00; line-height: 1; }
+.doc-logo .sub { font-size: 7px; opacity: .8; margin-top: 2px; }
+.doc-title-area {
+  flex: 1;
+  display: flex; flex-direction: column; justify-content: center;
+  padding: 4px 10px;
+  border-left: 2px solid #003087;
+}
+.doc-title { font-size: 15px; font-weight: 900; color: #003087; line-height: 1.2; }
+.doc-title-en { font-size: 8px; color: #666; letter-spacing: 1px; }
+.doc-meta {
+  min-width: 170px;
+  border-left: 2px solid #003087;
+  padding: 4px 8px;
+  display: flex; flex-direction: column; gap: 2px; justify-content: center;
+}
+.doc-meta .mrow { display: flex; gap: 4px; align-items: center; font-size: 10px; }
+.doc-meta label { color: #003087; font-weight: 700; white-space: nowrap; font-size: 9px; }
+.doc-meta input { flex: 1; }
+
+/* --- Note bar --- */
+.note-bar {
+  background: #fff8e0; border: 1px solid #f0c040; border-radius: 3px;
+  font-size: 9px; color: #664400; padding: 3px 8px; margin-bottom: 4px; line-height: 1.4;
+}
+
+/* --- Section label --- */
+.sec {
+  background: #003087; color: white;
+  font-size: 9.5px; font-weight: 700;
+  padding: 2px 8px; margin: 4px 0 2px;
+  letter-spacing: .5px;
+}
+
+/* --- Grid rows --- */
+.row { display: flex; gap: 4px; margin-bottom: 3px; align-items: flex-end; flex-wrap: wrap; }
+.f { display: flex; flex-direction: column; gap: 1px; flex: 1; min-width: 80px; }
+.f.w2 { flex: 2; }
+.f.w3 { flex: 3; }
+.f label { font-size: 8.5px; color: #003087; font-weight: 700; white-space: nowrap; }
+
+/* --- Two-column layout for print compactness --- */
+.two-col { display: flex; gap: 6px; }
+.col-left { flex: 1.1; }
+.col-right { flex: .9; }
+
+/* --- Discount table --- */
+.dtable { width: 100%; border-collapse: collapse; font-size: 9.5px; }
+.dtable th { background: #003087; color: white; padding: 2px 5px; text-align: left; font-size: 9px; }
+.dtable td { border: 1px solid #ccd; padding: 1px 4px; }
+.dtable td.lbl { background: #f0f4fa; font-weight: 600; color: #333; width: 52%; }
+.dtable td.amt { width: 28%; }
+.dtable td.amt input { text-align: right; }
+.dtable tr.sum td { background: #fff3c4; font-weight: 700; }
+
+/* --- Finance table --- */
+.ftable { width: 100%; border-collapse: collapse; font-size: 9.5px; }
+.ftable td { border: 1px solid #ccd; padding: 2px 5px; }
+.ftable td.lbl { background: #f0f4fa; font-weight: 700; color: #003087; width: 38%; font-size: 9px; }
+.ftable td.val { background: white; }
+.ftable td.val input { border: none; background: transparent; font-size: 10px; padding: 0; }
+.ftable td.val input:focus { background: #f0f4ff; }
+.ftable tr.hi td.val { background: #e8f0fe; }
+.ftable tr.hi td.val input { color: #003087; font-weight: 700; }
+
+/* --- Radio inline --- */
+.rinline { display: flex; gap: 10px; align-items: center; padding: 3px 0; flex-wrap: wrap; }
+.rinline label { font-size: 9.5px; color: #222; display: flex; align-items: center; gap: 3px; cursor: pointer; font-weight: 400; }
+
+/* --- Sig area --- */
+.sig-row { display: flex; gap: 5px; margin-top: 4px; }
+.sig-box { flex: 1; border: 1px solid #bbb; text-align: center; padding: 4px 3px 3px; border-radius: 3px; }
+.sig-box .st { font-size: 8.5px; color: #003087; font-weight: 700; margin-bottom: 16px; }
+.sig-box .sn { font-size: 8px; color: #555; border-top: 1px solid #bbb; padding-top: 2px; min-height: 12px; }
+
+/* --- Survey compact --- */
+.survey { display: grid; grid-template-columns: 1fr 1fr; gap: 3px 8px; }
+.survey .f { min-width: unset; }
+
+/* ===== PRINT ===== */
+@media print {
+  @page { size: A4; margin: 8mm 8mm; }
+  body { background: white; }
+  .topbar { display: none !important; }
+  .wrap { max-width: 100%; margin: 0; padding: 0; }
+  .doc { box-shadow: none; border-radius: 0; padding: 0; }
+
+  input, select, textarea {
+    border: none !important;
+    background: transparent !important;
+    box-shadow: none !important;
+    font-size: 9.5pt !important;
+    padding: 0 2px !important;
+  }
+  input[readonly] { background: transparent !important; color: #003087 !important; }
+
+  .dtable td.amt input,
+  .ftable td.val input { font-size: 9pt !important; }
+
+  select { -webkit-appearance: none; appearance: none; }
+
+  .no-print { display: none !important; }
+  .doc-logo .brand { color: #ffcc00; -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+  .doc-logo, .sec, .dtable th { -webkit-print-color-adjust: exact; print-color-adjust: exact; }
+}
+</style>
+</head>
+<body>
+
+<!-- TOP BAR (screen only) -->
+<div class="topbar no-print">
+  <div>
+    <div><small>ระยองอีซูซุเซลส์ จำกัด</small></div>
+    <h1>📋 ใบส่งแต่งรถ / ใบยืนยันยอดชำระเงิน</h1>
+  </div>
+  <div class="btn-row">
+    <button class="btn btn-r" onclick="resetForm()">🔄 ล้างข้อมูล</button>
+    <button class="btn btn-p" onclick="window.print()">🖨️ พิมพ์ (A4 หน้าเดียว)</button>
+  </div>
+</div>
+
+<div class="wrap">
+<div class="doc">
+
+  <!-- ===== HEADER ===== -->
+  <div class="doc-header">
+    <div class="doc-logo">
+      <div class="co">RAYONG</div>
+      <div class="brand">ISUZU</div>
+      <div class="sub">ระยองอีซูซุเซลส์ จำกัด</div>
+    </div>
+    <div class="doc-title-area">
+      <div class="doc-title">ใบส่งแต่งรถ / ใบยืนยันยอดชำระเงิน</div>
+      <div class="doc-title-en">VEHICLE ACCESSORY &amp; PAYMENT CONFIRMATION</div>
+    </div>
+    <div class="doc-meta">
+      <div class="mrow"><label>วันที่จอง:</label><input type="date" id="booking_date"></div>
+      <div class="mrow"><label>วันที่เอกสาร:</label><input type="date" id="doc_date"></div>
+      <div class="mrow"><label>วันรับรถ:</label><input type="date" id="delivery_date"></div>
+    </div>
+  </div>
+
+  <!-- NOTE -->
+  <div class="note-bar">
+    ⚠️ <strong>หมายเหตุ:</strong> ก่อนสั่งแต่งให้ SC ยืนยันการรับรถกับลูกค้า — กรณีที่แต่งรถแล้วลูกค้าไม่รับรถ SC ต้องรับผิดชอบส่วนต่างกรณีของแถมไม่ตามเงื่อนไขเดิม
+  </div>
+
+  <!-- ===== TWO-COLUMN LAYOUT ===== -->
+  <div class="two-col">
+
+    <!-- ===== LEFT COLUMN ===== -->
+    <div class="col-left">
+
+      <!-- ลูกค้า -->
+      <div class="sec">👤 ข้อมูลลูกค้า</div>
+      <div class="row">
+        <div class="f w3"><label>ชื่อ-นามสกุลลูกค้า</label><input type="text" id="customer_name"></div>
+        <div class="f w2"><label>เบอร์โทรศัพท์</label><input type="text" id="customer_phone"></div>
+      </div>
+      <div class="row">
+        <div class="f"><label>รายได้/เดือน (บาท)</label><input type="text" id="income" placeholder="15,000"></div>
+        <div class="f"><label>อายุงาน</label><input type="text" id="job_age" placeholder="2 ปี 4 เดือน"></div>
+        <div class="f"><label>จดทะเบียน</label>
+          <div class="rinline">
+            <label><input type="radio" name="reg" value="ระยอง" checked> ระยอง</label>
+            <label><input type="radio" name="reg" value="ชลบุรี"> ชลบุรี</label>
+            <label><input type="radio" name="reg" value="อื่นๆ"> อื่นๆ</label>
+          </div>
+        </div>
+      </div>
+
+      <!-- รถ -->
+      <div class="sec">🚗 ข้อมูลรถยนต์</div>
+      <div class="row">
+        <div class="f w2">
+          <label>รุ่นรถ (เลือก Code)</label>
+          <select id="car_code" onchange="fillCar()">
+            <option value="">-- เลือกรุ่น --</option>
+            <optgroup label="─ P-UP ─">
+              <option value="UNA10|692000|Spark 2.2 Flat Deck(SWB)">UNA10 – Spark 2.2 Flat Deck (692,000)</option>
+              <option value="UNL10|595000|Spark 2.2 Ddi B">UNL10 – Spark 2.2 Ddi B (595,000)</option>
+              <option value="UNM10|628000|Spark 2.2 Ddi S">UNM10 – Spark 2.2 Ddi S (628,000)</option>
+              <option value="UNM20|635000|Spark 2.2 Ddi S">UNM20 – Spark 2.2 Ddi S (635,000)</option>
+              <option value="UNN10|672000|Spark 2.2 Ddi S AT">UNN10 – Spark 2.2 Ddi S AT (672,000)</option>
+              <option value="UNN20|679000|Spark 2.2 Ddi S AT">UNN20 – Spark 2.2 Ddi S AT (679,000)</option>
+              <option value="UNP10|648000|Spark 3.0 Ddi S">UNP10 – Spark 3.0 Ddi S (648,000)</option>
+              <option value="UNP20|655000|Spark 3.0 Ddi S">UNP20 – Spark 3.0 Ddi S (655,000)</option>
+              <option value="UNQ10|740000|Spark 4x4 3.0 Ddi S">UNQ10 – Spark 4x4 3.0 Ddi S (740,000)</option>
+              <option value="UNQ20|747000|Spark 4x4 3.0 Ddi S">UNQ20 – Spark 4x4 3.0 Ddi S (747,000)</option>
+              <option value="UNR10|780000|Spark 4x4 3.0 Ddi S AT">UNR10 – Spark 4x4 3.0 Ddi S AT (780,000)</option>
+              <option value="UNR20|787000|Spark 4x4 3.0 Ddi S AT">UNR20 – Spark 4x4 3.0 Ddi S AT (787,000)</option>
+              <option value="UPG10|668000|Spacecab 2.2 Ddi S">UPG10 – Spacecab 2.2 Ddi S (668,000)</option>
+              <option value="UPG20|675000|Spacecab 2.2 Ddi S">UPG20 – Spacecab 2.2 Ddi S (675,000)</option>
+              <option value="UPH10|712000|Spacecab 2.2 Ddi S AT">UPH10 – Spacecab 2.2 Ddi S AT (712,000)</option>
+              <option value="UPH20|719000|Spacecab 2.2 Ddi S AT">UPH20 – Spacecab 2.2 Ddi S AT (719,000)</option>
+              <option value="UPK10|733000|Spacecab 2.2 Ddi L">UPK10 – Spacecab 2.2 Ddi L (733,000)</option>
+              <option value="UPK20|740000|Spacecab 2.2 Ddi L">UPK20 – Spacecab 2.2 Ddi L (740,000)</option>
+              <option value="UPE10|768000|X-Series Speed 2Drs 2.2Ddi">UPE10 – X-Series Speed 2Drs (768,000)</option>
+              <option value="UPE20|775000|X-Series Speed 2Drs 2.2Ddi">UPE20 – X-Series Speed 2Drs (775,000)</option>
+              <option value="UPL10|777000|Spacecab 2.2 Ddi L AT">UPL10 – Spacecab 2.2 Ddi L AT (777,000)</option>
+              <option value="UPL20|784000|Spacecab 2.2 Ddi L AT">UPL20 – Spacecab 2.2 Ddi L AT (784,000)</option>
+              <option value="UQH10|778000|HR 2Drs 2.2 Ddi L">UQH10 – HR 2Drs 2.2 Ddi L (778,000)</option>
+              <option value="UQH20|785000|HR 2Drs 2.2 Ddi L">UQH20 – HR 2Drs 2.2 Ddi L (785,000)</option>
+              <option value="UQJ10|822000|HR 2Drs 2.2 Ddi L AT">UQJ10 – HR 2Drs 2.2 Ddi L AT (822,000)</option>
+              <option value="UQJ20|829000|HR 2Drs 2.2 Ddi L AT">UQJ20 – HR 2Drs 2.2 Ddi L AT (829,000)</option>
+              <option value="UQK10|841000|HR 2Drs 2.2 Ddi Z">UQK10 – HR 2Drs 2.2 Ddi Z (841,000)</option>
+              <option value="UQK20|848000|HR 2Drs 2.2 Ddi Z">UQK20 – HR 2Drs 2.2 Ddi Z (848,000)</option>
+              <option value="UQL10|885000|HR 2Drs 2.2 Ddi Z AT">UQL10 – HR 2Drs 2.2 Ddi Z AT (885,000)</option>
+              <option value="UQL20|892000|HR 2Drs 2.2 Ddi Z AT">UQL20 – HR 2Drs 2.2 Ddi Z AT (892,000)</option>
+              <option value="UQN20|937000|V-Cross 2Drs 3.0 Ddi Z">UQN20 – V-Cross 2Drs 3.0 Ddi Z (937,000)</option>
+              <option value="URA10|749000|Cab4 2.2 Ddi S">URA10 – Cab4 2.2 Ddi S (749,000)</option>
+              <option value="URA20|756000|Cab4 2.2 Ddi S">URA20 – Cab4 2.2 Ddi S (756,000)</option>
+              <option value="URB10|793000|Cab4 2.2 Ddi S AT">URB10 – Cab4 2.2 Ddi S AT (793,000)</option>
+              <option value="URB20|800000|Cab4 2.2 Ddi S AT">URB20 – Cab4 2.2 Ddi S AT (800,000)</option>
+              <option value="URD10|829000|Cab4 2.2 Ddi L">URD10 – Cab4 2.2 Ddi L (829,000)</option>
+              <option value="URD20|836000|Cab4 2.2 Ddi L">URD20 – Cab4 2.2 Ddi L (836,000)</option>
+              <option value="URE10|864000|X-Series Speed 4Drs 2.2Ddi">URE10 – X-Series Speed 4Drs (864,000)</option>
+              <option value="URE20|871000|X-Series Speed 4Drs 2.2Ddi">URE20 – X-Series Speed 4Drs (871,000)</option>
+              <option value="URF10|873000|Cab4 2.2 Ddi L AT">URF10 – Cab4 2.2 Ddi L AT (873,000)</option>
+              <option value="URF20|880000|Cab4 2.2 Ddi L AT">URF20 – Cab4 2.2 Ddi L AT (880,000)</option>
+              <option value="URH10|939000|Cab4 2.2 Ddi Z AT">URH10 – Cab4 2.2 Ddi Z AT (939,000)</option>
+              <option value="URH20|946000|Cab4 2.2 Ddi Z AT">URH20 – Cab4 2.2 Ddi Z AT (946,000)</option>
+              <option value="USA20|885000|HR 4Drs 2.2 Ddi L">USA20 – HR 4Drs 2.2 Ddi L (885,000)</option>
+              <option value="USA30|892000|HR 4Drs 2.2 Ddi L">USA30 – HR 4Drs 2.2 Ddi L (892,000)</option>
+              <option value="USB20|924000|HR 4Drs 2.2 Ddi L AT">USB20 – HR 4Drs 2.2 Ddi L AT (924,000)</option>
+              <option value="USB30|931000|HR 4Drs 2.2 Ddi L AT">USB30 – HR 4Drs 2.2 Ddi L AT (931,000)</option>
+              <option value="USC20|952000|HR 4Drs 2.2 Ddi Z">USC20 – HR 4Drs 2.2 Ddi Z (952,000)</option>
+              <option value="USC30|959000|HR 4Drs 2.2 Ddi Z">USC30 – HR 4Drs 2.2 Ddi Z (959,000)</option>
+              <option value="USD20|1002000|X-Series HR 4Drs 2.2Ddi">USD20 – X-Series HR 4Drs (1,002,000)</option>
+              <option value="USD30|1009000|X-Series HR 4Drs 2.2Ddi">USD30 – X-Series HR 4Drs (1,009,000)</option>
+              <option value="USE20|991000|HR 4Drs 2.2 Ddi Z AT">USE20 – HR 4Drs 2.2 Ddi Z AT (991,000)</option>
+              <option value="USE30|998000|HR 4Drs 2.2 Ddi Z AT">USE30 – HR 4Drs 2.2 Ddi Z AT (998,000)</option>
+              <option value="USF20|1041000|X-Series HR 4Drs 2.2Ddi AT">USF20 – X-Series HR 4Drs AT (1,041,000)</option>
+              <option value="USF30|1048000|X-Series HR 4Drs 2.2Ddi AT">USF30 – X-Series HR 4Drs AT (1,048,000)</option>
+              <option value="USK20|1157000|HR 4Drs 2.2 Ddi M AT">USK20 – HR 4Drs 2.2 Ddi M AT (1,157,000)</option>
+              <option value="USK30|1164000|HR 4Drs 2.2 Ddi M AT">USK30 – HR 4Drs 2.2 Ddi M AT (1,164,000)</option>
+              <option value="USM20|1184000|HR 4Drs 3.0 Ddi M AT">USM20 – HR 4Drs 3.0 Ddi M AT (1,184,000)</option>
+              <option value="USM30|1191000|HR 4Drs 3.0 Ddi M AT">USM30 – HR 4Drs 3.0 Ddi M AT (1,191,000)</option>
+              <option value="USN20|1054000|V-Cross 4Drs 3.0 Ddi Z">USN20 – V-Cross 4Drs 3.0 Ddi Z (1,054,000)</option>
+              <option value="USN30|1061000|V-Cross 4Drs 3.0 Ddi Z">USN30 – V-Cross 4Drs 3.0 Ddi Z (1,061,000)</option>
+              <option value="USR20|1297000|V-Cross Max 4Drs AT">USR20 – V-Cross Max 4Drs AT (1,297,000)</option>
+              <option value="USR30|1304000|V-Cross Max 4Drs AT">USR30 – V-Cross Max 4Drs AT (1,304,000)</option>
+            </optgroup>
+            <optgroup label="─ PPV (Mu-X) ─">
+              <option value="UUA20|1194000|Mu-X 4x2 2.2 Active">UUA20 – Mu-X 4x2 2.2 Active (1,194,000)</option>
+              <option value="UUA30|1206000|Mu-X 4x2 2.2 Active">UUA30 – Mu-X 4x2 2.2 Active (1,206,000)</option>
+              <option value="UUB20|1429000|Mu-X 4x2 2.2 Elegant">UUB20 – Mu-X 4x2 2.2 Elegant (1,429,000)</option>
+              <option value="UUB30|1441000|Mu-X 4x2 2.2 Elegant">UUB30 – Mu-X 4x2 2.2 Elegant (1,441,000)</option>
+              <option value="UUC20|1554000|Mu-X 4x2 2.2 Ultimate">UUC20 – Mu-X 4x2 2.2 Ultimate (1,554,000)</option>
+              <option value="UUC30|1566000|Mu-X 4x2 2.2 Ultimate">UUC30 – Mu-X 4x2 2.2 Ultimate (1,566,000)</option>
+              <option value="UUD20|1624000|Mu-X 4x2 2.2 RS">UUD20 – Mu-X 4x2 2.2 RS (1,624,000)</option>
+              <option value="UUG20|1659000|Mu-X 4x2 3.0 RS">UUG20 – Mu-X 4x2 3.0 RS (1,659,000)</option>
+              <option value="UUH20|1759000|Mu-X 4x4 3.0 RS 4WD">UUH20 – Mu-X 4x4 3.0 RS 4WD (1,759,000)</option>
+              <option value="UUH60|1771000|Mu-X 4x4 3.0 RS 4WD">UUH60 – Mu-X 4x4 3.0 RS 4WD (1,771,000)</option>
+            </optgroup>
+          </select>
+        </div>
+        <div class="f w2"><label>ชื่อรุ่น (MKT Name)</label><input type="text" id="car_name"></div>
+        <div class="f"><label>ราคารถ (บาท)</label><input type="text" id="car_price" oninput="calc()"></div>
+      </div>
+      <div class="row">
+        <div class="f w2"><label>สีรถ</label><input type="text" id="car_color" placeholder="เช่น DWP ขาวมุก"></div>
+        <div class="f w2"><label>เลขตัวถัง (VSBKX)</label><input type="text" id="chassis_no"></div>
+        <div class="f w2"><label>เลขเครื่อง</label><input type="text" id="engine_no"></div>
+      </div>
+      <div class="row">
+        <div class="f">
+          <label>กระบะไลเนอร์</label>
+          <div class="rinline">
+            <label><input type="radio" name="liner" value="แถม" checked> แถม</label>
+            <label><input type="radio" name="liner" value="ขายแยก"> ขายแยก</label>
+            <label><input type="radio" name="liner" value="ไม่มี"> ไม่มี</label>
+          </div>
+        </div>
+        <div class="f">
+          <label>ประกันชั้น 1</label>
+          <div class="rinline">
+            <label><input type="radio" name="ins1" value="แถม"> แถม</label>
+            <label><input type="radio" name="ins1" value="ขายแยก" checked> ขายแยก</label>
+            <label><input type="radio" name="ins1" value="จ่ายแยก"> จ่ายแยก</label>
+          </div>
+        </div>
+      </div>
+      <div class="row">
+        <div class="f w3"><label>อุปกรณ์ตกแต่ง / ของแถมมาตรฐาน</label><input type="text" id="acc_detail" placeholder="พ่นกันสนิม / ฟิล์ม / กรอบป้าย / ผ้ายาง / กันสาด"></div>
+        <div class="f"><label>ราคาอุปกรณ์ (บาท)</label><input type="text" id="acc_price" value="0" oninput="calc()"></div>
+      </div>
+      <div class="row">
+        <div class="f"><label>ค่าทะเบียน (บาท)</label><input type="text" id="reg_fee" value="5,700" oninput="calc()"></div>
+        <div class="f"><label>ค่าป้ายแดง (บาท)</label><input type="text" id="plate_fee" value="3,000" oninput="calc()"></div>
+        <div class="f"><label>ค่านำพา (บาท)</label><input type="text" id="delivery_fee" value="3,000" oninput="calc()"></div>
+        <div class="f"><label>ค่าแจ้งย้าย (บาท)</label><input type="text" id="transfer_fee" value="0" oninput="calc()"></div>
+      </div>
+
+      <!-- ที่ปรึกษา -->
+      <div class="sec">👔 ที่ปรึกษาการขาย / สาขา</div>
+      <div class="row">
+        <div class="f w2">
+          <label>ที่ปรึกษาการขาย</label>
+          <select id="sc_sel" onchange="syncSC()">
+            <option value="">-- เลือก --</option>
+            <option>ภัทรณัฎฐ์ สมัครณรงค์</option><option>ธีรภัทร เชียงแรง(เดียว)</option>
+            <option>อินธุอร ศรีเชียงพิมพ์</option><option>ฐัชชนันท์ วรรณพงษ์</option>
+            <option>ศิรินทิพย์ ชัยสา</option><option>ปิยะณัฒน์ ศิริศิลป์งษ์</option>
+            <option>ศิรินทิพย์ สุทัดสัน</option><option>นันชธร ลี่แตง(เปิ้ล)</option>
+            <option>วิชญาดา ห้วยไผ่</option><option>ลัดดาวัลย์ ทุมแต้ม</option>
+            <option>ศงพรรณศิษฐ์ เจริญวงษ์</option><option>พันนิสา พุดหล้า</option>
+            <option>ปริยา ปินธุ</option><option>ธัญญาเรศ ศรีพรหมมา</option>
+            <option>นุชนาถ บุญประวงค์</option><option>นพเก้า แสงเพชร</option>
+            <option>กชกร กล่อมแก้ว</option><option>คอลีเยาะ มิงมะ</option>
+            <option>พัชรพร คำภูลอย</option><option>รัตนาภรณ์ นุมอญ (แก้มยุ้ย)</option>
+            <option>ชุติมา ม่วงพาชี (ตั๊ก)</option><option>จุฑาวรรณ เต็มเมืองปัก(เบส)</option>
+            <option>ชนิดา โชคชัย(นิว)</option><option>รุ่งนภา พรหมทอง</option>
+            <option>วิทวัฒน์ เจนดง</option><option>อาทิมา เวกชาลิกานน</option>
+            <option>กชพรรณ ถานะวร(นกยูง)</option><option>ธัญศญา พิมพา(แอม)</option>
+            <option>ชุติกาญจน์ สายทากุล(แวว)</option><option>บุญรักษ์ เจ๊ะสนู</option>
+            <option>อาภรณ์(ปีใหม่)</option><option>อนวัทย์ เตรัมย์</option>
+            <option>ชัยวัฒน์ ภุมเรศ</option><option>วริศรา ลาภมาก</option>
+            <option>วรัญชญา มนตรีโพธิ์</option><option>พฤกษา นัคสิทธิ์</option>
+            <option>เนตรนภา ลาภา</option><option>ศิริวิมล สิงหัน</option>
+            <option>วราภรณ์ มะนิมิตร</option><option>เปมิกา (แพร)</option>
+            <option>รัศมี ทองทับ</option><option>นรินดา พรมมา(ก้อย)</option>
+            <option>ชฎาภรณ์ จันดีทอง</option><option>ทิพย์หทัย ภูด่านงัว</option>
+            <option>นลัทธวรรณ ยังแช่ม</option><option>ดวงเดือน โพธิ์ไทร</option>
+            <option>ลภัสนันท์ ทองแพง</option><option>สุนิษา แข่โส</option>
+            <option>วิภาวี จันทวงษ์</option><option>ดาวเรือง ขยิ่มค้า</option>
+            <option>พัชชาพลอย สร้อยทองรุ้ง(เนส)</option><option>นิสรา พรหมเกตุ</option>
+            <option>ชนัญชิดา สอนปัญ</option><option>สุกัญญา ทันวัน</option>
+            <option>นุชรี ศรีพิมพ์สอ</option><option>รัชนีวรรณ เรืองน้อย</option>
+            <option>สุริยะ มณีเนตร</option><option>มาริสา ไชยศรีษะ</option>
+            <option>อารีรัตน์ เหลืองโม</option><option>เพียงตะวัน อินทนิจ</option>
+            <option>สิตาพัชร์ รัศมิ์วรรณกิจ</option><option>ณัฐมนต์ โง่นแน่นไอซ์</option>
+            <option>บุษรา ผมพันธ์ ปู</option><option>วิภาวี</option>
+            <option value="__new__">+ เพิ่มชื่อใหม่...</option>
+          </select>
+        </div>
+        <div class="f w2"><label>ชื่อที่ปรึกษา (กรณีพิมพ์เอง)</label><input type="text" id="sc_name" placeholder="พิมพ์ชื่อที่ปรึกษา"></div>
+        <div class="f"><label>เบอร์ SC</label><input type="text" id="sc_phone"></div>
+        <div class="f">
+          <label>สาขา</label>
+          <select id="branch">
+            <option>มาบตาพุด</option><option>บ้านค่าย</option><option>นิคมพัฒนา</option>
+            <option>แกลง</option><option>ปลวกแดง</option><option>บ้านฉาง</option>
+          </select>
+        </div>
+      </div>
+
+      <!-- Survey -->
+      <div class="sec">📊 ข้อมูลสำรวจ</div>
+      <div class="survey">
+        <div class="f">
+          <label>อาชีพปัจจุบัน</label>
+          <select id="q1">
+            <option value="">-- เลือก --</option>
+            <option>รับจ้าง/ลูกจ้างเอกชน</option>
+            <option>ข้าราชการ/รัฐวิสาหกิจ</option>
+            <option>ประกอบธุรกิจส่วนตัว</option>
+            <option>เกษตรกร</option>
+            <option>ไม่ได้ประกอบอาชีพ (เกษียณ/แม่บ้าน/นักศึกษา)</option>
+          </select>
+        </div>
+        <div class="f">
+          <label>ระดับการศึกษา</label>
+          <select id="q2">
+            <option value="">-- เลือก --</option>
+            <option>ประถมศึกษา</option><option>มัธยมศึกษา/ปวช.</option>
+            <option>อนุปริญญา/ปวส.</option><option>ปริญญาตรี</option>
+            <option>ปริญญาโทขึ้นไป</option>
+          </select>
+        </div>
+        <div class="f">
+          <label>รายได้เฉลี่ย/เดือน</label>
+          <select id="q3">
+            <option value="">-- เลือก --</option>
+            <option>น้อยกว่า 15,000 บาท</option>
+            <option>15,001 – 30,000 บาท</option>
+            <option>30,001 – 50,000 บาท</option>
+            <option>50,001 – 100,000 บาท</option>
+            <option>มากกว่า 100,000 บาทขึ้นไป</option>
+          </select>
+        </div>
+        <div class="f">
+          <label>ประเภทการซื้อ</label>
+          <select id="q5">
+            <option value="">-- เลือก --</option>
+            <option>ซื้อรถคันแรก</option>
+            <option>ซื้อแทนรถคันเก่า</option>
+            <option>เพิ่มจำนวนรถ</option>
+          </select>
+        </div>
+        <div class="f">
+          <label>รถเก่า: ยี่ห้อ / ชนิด / ใช้มา</label>
+          <input type="text" id="old_car" placeholder="เช่น Toyota Hilux / 5 ปี">
+        </div>
+        <div class="f">
+          <label>วัตถุประสงค์การใช้รถ</label>
+          <select id="q7">
+            <option value="">-- เลือก --</option>
+            <option>ใช้ส่วนตัว/ครอบครัว</option>
+            <option>ใช้รถในธุรกิจของตนเอง</option>
+            <option>รับจ้างขนส่ง</option>
+            <option>หน่วยราชการ/รัฐวิสาหกิจ</option>
+            <option>ธุรกิจอื่นๆ</option>
+          </select>
+        </div>
+      </div>
+
+    </div><!-- end col-left -->
+
+    <!-- ===== RIGHT COLUMN ===== -->
+    <div class="col-right">
+
+      <!-- ส่วนลด -->
+      <div class="sec">🏷️ รายการส่วนลด / โปรโมชั่น</div>
+      <table class="dtable">
+        <thead><tr><th>รายการ</th><th>จำนวน (บาท)</th><th>หมายเหตุ</th></tr></thead>
+        <tbody>
+          <tr><td class="lbl">บัตรกำนัล</td><td class="amt"><input type="text" id="d1" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">Marketing Support</td><td class="amt"><input type="text" id="d2" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">สุขยกตระกูล</td><td class="amt"><input type="text" id="d3" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">Big Thank</td><td class="amt"><input type="text" id="d4" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">พนง.ผู้ผลิต (ISG)</td><td class="amt"><input type="text" id="d5" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">พนง.ผู้จำหน่าย</td><td class="amt"><input type="text" id="d6" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">โปรย้ายใหญ่</td><td class="amt"><input type="text" id="d7" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">TIS Segment รายรุ่น</td><td class="amt"><input type="text" id="d8" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">ส่วนลด CIG</td><td class="amt"><input type="text" id="d9" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">TIS Stock Support</td><td class="amt"><input type="text" id="d10" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">ส่วนลด Liner</td><td class="amt"><input type="text" id="d11" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">ส่วนลดซัพดาวน์</td><td class="amt"><input type="text" id="d12" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">TIS Seg. Zone</td><td class="amt"><input type="text" id="d13" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">My Bonus</td><td class="amt"><input type="text" id="d14" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">RIS ขอเพิ่มพิเศษ(หักคอม)</td><td class="amt"><input type="text" id="d15" value="0" oninput="calc()"></td><td><input type="text"></td></tr>
+          <tr><td class="lbl">ส่วนลดอื่นๆ</td><td class="amt"><input type="text" id="d16" value="0" oninput="calc()"></td><td><input type="text" id="d16_name" placeholder="ระบุชื่อ"></td></tr>
+          <tr class="sum"><td class="lbl">รวมส่วนลดทั้งหมด</td><td class="amt"><input type="text" id="d_total" readonly></td><td></td></tr>
+        </tbody>
+      </table>
+
+      <!-- การเงิน -->
+      <div class="sec">💰 การเงิน / สินเชื่อ</div>
+      <table class="ftable">
+        <tr class="hi"><td class="lbl">ราคาขายรวม (บาท)</td><td class="val"><input type="text" id="total_price" readonly></td></tr>
+        <tr><td class="lbl">% เงินดาวน์</td><td class="val"><input type="text" id="down_pct" placeholder="เช่น 15" oninput="calcDown()"></td></tr>
+        <tr><td class="lbl">เงินดาวน์ (บาท)</td><td class="val"><input type="text" id="down_amt" oninput="calc()"></td></tr>
+        <tr class="hi"><td class="lbl">ยอดจัด (บาท)</td><td class="val"><input type="text" id="finance_amt" readonly></td></tr>
+        <tr><td class="lbl">ไฟแนนซ์</td><td class="val"><input type="text" id="finance_co" placeholder="TTB / KBANK / SCB..."></td></tr>
+        <tr><td class="lbl">ดอกเบี้ย %</td><td class="val"><input type="text" id="interest" placeholder="เช่น 1.95" oninput="calcInstallment()"></td></tr>
+        <tr><td class="lbl">จำนวนงวด / ปี</td><td class="val">
+          <div style="display:flex;gap:4px;">
+            <input type="text" id="installment_count" placeholder="48 งวด" style="flex:1;" oninput="syncYears(); calcInstallment();">
+            <input type="text" id="installment_years" placeholder="4 ปี" style="flex:1;" oninput="syncMonths(); calcInstallment();">
+          </div>
+        </td></tr>
+        <tr class="hi"><td class="lbl">ค่างวด (บาท) 🔄</td><td class="val"><input type="text" id="installment_amt" readonly></td></tr>
+        <tr><td class="lbl">ฟิล์มกระจก (%)</td><td class="val">
+          <div style="display:flex;gap:6px;align-items:center;font-size:9px;">
+            <span>หน้า</span><input type="text" id="film_f" value="60" style="width:36px;">
+            <span>ข้าง</span><input type="text" id="film_s" value="80" style="width:36px;">
+            <span>หลัง</span><input type="text" id="film_r" value="80" style="width:36px;">
+          </div>
+        </td></tr>
+      </table>
+
+      <!-- ลายเซ็น -->
+      <div class="sec" style="margin-top:5px;">✍️ ลายเซ็นอนุมัติ</div>
+      <div class="sig-row">
+        <div class="sig-box">
+          <div class="st">ที่ปรึกษาการขาย</div>
+          <div class="sn" id="sig_sc_name">.................................</div>
+        </div>
+        <div class="sig-box">
+          <div class="st">ธุรการสาขา</div>
+          <div class="sn">.................................</div>
+        </div>
+        <div class="sig-box">
+          <div class="st">สต๊อกรถยนต์</div>
+          <div class="sn">.................................</div>
+        </div>
+        <div class="sig-box">
+          <div class="st">ผู้จัดการสาขา</div>
+          <div class="sn">.................................</div>
+        </div>
+        <div class="sig-box">
+          <div class="st">ผู้จัดการทั่วไป</div>
+          <div class="sn">.................................</div>
+        </div>
+      </div>
+
+    </div><!-- end col-right -->
+  </div><!-- end two-col -->
+
+</div><!-- end doc -->
+</div><!-- end wrap -->
+
+<script>
+// fill car info
+function fillCar() {
+  const v = document.getElementById('car_code').value;
+  if (!v) return;
+  const p = v.split('|');
+  document.getElementById('car_name').value = p[2] || '';
+  document.getElementById('car_price').value = parseInt(p[1]).toLocaleString('th-TH');
+  calc();
+}
+
+// parse
+function pn(id) {
+  return parseFloat((document.getElementById(id).value||'0').replace(/,/g,'')) || 0;
+}
+
+// calc
+function calc() {
+  const car = pn('car_price'), acc = pn('acc_price');
+  const disc = [1,2,3,4,5,6,7,8,9,10,11,12,13,14,15,16].reduce((s,i)=>s+pn('d'+i),0);
+  document.getElementById('d_total').value = disc.toLocaleString('th-TH');
+  const total = car + acc;
+  document.getElementById('total_price').value = total.toLocaleString('th-TH');
+  const down = pn('down_amt');
+  const fin = total - down - disc;
+  document.getElementById('finance_amt').value = fin > 0 ? fin.toLocaleString('th-TH') : '0';
+  calcInstallment();
+}
+
+function calcDown() {
+  const pct = parseFloat(document.getElementById('down_pct').value) || 0;
+  const total = pn('total_price');
+  if (total > 0 && pct > 0) {
+    document.getElementById('down_amt').value = Math.round(total * pct / 100).toLocaleString('th-TH');
+    calc();
+  }
+}
+
+// sync งวด ↔ ปี
+function syncYears() {
+  const n = parseFloat(document.getElementById('installment_count').value) || 0;
+  if (n > 0) document.getElementById('installment_years').value = (n / 12).toFixed(n % 12 === 0 ? 0 : 1);
+}
+function syncMonths() {
+  const y = parseFloat(document.getElementById('installment_years').value) || 0;
+  if (y > 0) document.getElementById('installment_count').value = Math.round(y * 12);
+}
+
+// คำนวณค่างวด (Flat Rate)
+// สูตร: ค่างวด = (ยอดจัด + ยอดจัด × ดอกเบี้ย% × จำนวนปี) / จำนวนงวด
+function calcInstallment() {
+  const fin   = pn('finance_amt');
+  const rate  = parseFloat((document.getElementById('interest').value || '0').replace('%','')) || 0;
+  const n     = parseFloat(document.getElementById('installment_count').value) || 0;
+  const years = n / 12;
+  const el    = document.getElementById('installment_amt');
+
+  if (fin > 0 && rate > 0 && n > 0) {
+    const totalInterest = fin * (rate / 100) * years;
+    const monthly = (fin + totalInterest) / n;
+    el.value = Math.round(monthly).toLocaleString('th-TH');
+    el.style.color = '#003087';
+  } else {
+    el.value = '';
+  }
+}
+
+function syncSC() {
+  const v = document.getElementById('sc_sel').value;
+  if (v && v !== '__new__') document.getElementById('sc_name').value = v;
+  else if (v === '__new__') document.getElementById('sc_name').focus();
+}
+
+function resetForm() {
+  if (!confirm('ล้างข้อมูลทั้งหมด?')) return;
+  document.querySelectorAll('input[type=text],input[type=date],select').forEach(el => {
+    if (el.tagName==='SELECT') el.selectedIndex=0; else el.value='';
+  });
+  // restore defaults
+  const def = {reg_fee:'5,700',plate_fee:'3,000',delivery_fee:'3,000',transfer_fee:'0',
+    acc_price:'0',film_f:'60',film_s:'80',film_r:'80'};
+  for(const [id,val] of Object.entries(def)) document.getElementById(id).value=val;
+  ['d1','d2','d3','d4','d5','d6','d7','d8','d9','d10','d11','d12','d13','d14','d15','d16'].forEach(id=>{
+    document.getElementById(id).value='0';
+  });
+  document.querySelector('input[name="liner"][value="แถม"]').checked=true;
+  document.querySelector('input[name="ins1"][value="ขายแยก"]').checked=true;
+  document.querySelector('input[name="reg"][value="ระยอง"]').checked=true;
+  calc();
+}
+
+window.onload = () => {
+  document.getElementById('doc_date').value = new Date().toISOString().split('T')[0];
+  document.getElementById('sc_sel').addEventListener('change', function() {
+    document.getElementById('sig_sc_name').textContent = this.value && this.value!=='__new__' ? this.value : '.................................';
+  });
+  document.getElementById('sc_name').addEventListener('input', function() {
+    document.getElementById('sig_sc_name').textContent = this.value || '.................................';
+  });
+};
+</script>
+</body>
+</html>
